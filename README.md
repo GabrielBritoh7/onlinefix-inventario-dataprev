@@ -53,23 +53,6 @@ Copie as linhas da planilha antiga (Excel/SharePoint) e cole na aba **Inventári
 
 ---
 
-## 📑 Sumário
-
-1. [Visão Geral](#-visão-geral)
-2. [Principais Funcionalidades](#-principais-funcionalidades)
-3. [Regras de Negócio e Automações](#-regras-de-negócio-e-automações)
-4. [Estrutura de Arquivos](#-estrutura-de-arquivos)
-5. [Tecnologias Utilizadas](#-tecnologias-utilizadas)
-6. [Como Executar e Hospedar](#-como-executar-e-hospedar)
-   - [Hospedagem Gratuita com HTTPS (GitHub Pages)](#1-hospedagem-gratuita-com-https-github-pages)
-   - [Execução Local no Computador](#2-execução-local-no-computador)
-7. [Como Usar no Celular (Passo a Passo)](#-como-usar-no-celular-passo-a-passo)
-8. [Exportação e Manipulação de Dados](#-exportação-e-manipulação-de-dados)
-9. [Segurança e Privacidade](#-segurança-e-privacidade)
-10. [Guia de Customização](#-guia-de-customização)
-
----
-
 ## 🎯 Visão Geral
 
 O **Inventário TI** foi projetado para resolver a lentidão e os erros comuns no levantamento manual de parques de equipamentos (como estações de trabalho e desktops Daten, Dell, Lenovo, etc.). 
@@ -91,27 +74,6 @@ A ferramenta funciona diretamente no navegador do smartphone ou computador, com 
 - ✏️ **Edição e Exclusão:** Gerenciamento completo de registros existentes direto da lista de equipamentos.
 - 📥 **Exportação para Planilha (.CSV):** Geração de arquivo CSV formatado com codificação UTF-8 com BOM e delimitador `;`, abrindo perfeitamente no Microsoft Excel e Google Planilhas.
 - 📱 **Instalação como Aplicativo (PWA):** Pode ser instalado na tela inicial do celular ou do desktop e funciona **mesmo sem conexão com a internet** (offline).
-
----
-
-## ⚙️ Regras de Negócio e Automações
-
-### 1. Regra do Número de Patrimônio
-Muitas etiquetas de código de barras patrimoniais de órgãos públicos e empresas utilizam 8 dígitos (iniciados com prefixo fixo, como `39`). A aplicação aplica a seguinte tratativa:
-- **Ao ler/inserir 8 dígitos (ex.: `39289751`):** O sistema remove os dois primeiros dígitos e armazena apenas os **6 últimos dígitos** (`289751`).
-- **Ao ler/inserir 6 dígitos (ex.: `289751`):** O sistema mantém o valor original sem alterações.
-- Essa regra é acionada na leitura por câmera, na perda de foco do campo (`change`), em leitores de código de barras USB e na submissão do formulário.
-
-### 2. Validação de Unicidade
-- Não é permitido salvar dois equipamentos com o mesmo **Patrimônio** ou o mesmo **Número de Série**.
-- Ao editar um item existente, o sistema reconhece o próprio ID e não o acusa como duplicata de si mesmo.
-
-### 3. Componentes Monitorados
-- **SSD**
-- **HD**
-- **Memória RAM**
-
-*(A opção de Fonte foi descontinuada do formulário conforme alinhamento operacional).*
 
 ---
 
@@ -143,30 +105,6 @@ DATENBOMBA-inventario-ti/
   - `localStorage`: Persistência local no navegador do cliente.
   - `BarcodeDetector API` & `getUserMedia`: Acesso à câmera do dispositivo e decodificação de códigos de barras (Code 128, Code 39, EAN, QR Code, etc.).
   - `Service Worker API` & `Cache API`: Cache de ativos estáticos para suporte offline.
-
----
-
-## 🚀 Como Executar e Hospedar
-
-### 1. Hospedagem Gratuita com HTTPS (GitHub Pages)
-> **Recomendado:** Os navegadores de celular exigem conexão segura (`HTTPS`) para permitir o uso da câmera no scanner.
-
-1. Crie uma conta ou entre no [GitHub](https://github.com).
-2. Crie um novo repositório público (ex.: `inventario-ti`).
-3. Faça o upload dos arquivos da pasta do projeto.
-4. No repositório, acesse **Settings** > **Pages**.
-5. Em **Source**, selecione a branch `main` e a pasta `/ (root)`, depois clique em **Save**.
-6. Em instantes, o link público seguro estará disponível (ex.: `https://seu-usuario.github.io/inventario-ti/`).
-
-### 2. Execução Local no Computador
-Caso queira testar apenas no computador de trabalho via navegador:
-- Basta dar duplo clique no arquivo `index.html`.
-- Para simular um servidor local no Windows (com Python instalado):
-  ```powershell
-  cd "C:\Users\gabriel.bmendes\OneDrive - Dataprev\Área de Trabalho\DATENBOMBA-inventario-ti"
-  py -m http.server 8000
-  ```
-  Acesse no navegador: `http://localhost:8000`.
 
 ---
 
@@ -215,12 +153,3 @@ Caso queira testar apenas no computador de trabalho via navegador:
 - **Excel no SharePoint/OneDrive:** um site estático não consegue gravar direto numa planilha do SharePoint sem um registro de aplicativo no Azure AD (depende do administrador do tenant) ou um fluxo do Power Automate com gatilho HTTP (licença Premium). Por isso a opção gratuita usa Google Sheets; a planilha pode ser baixada em .xlsx a qualquer momento.
 - **Leitura de código de barras:** usa a API `BarcodeDetector`, disponível no Chrome/Edge para Android. No iPhone (Safari) a leitura automática não existe; a digitação manual continua funcionando.
 - **Edição simultânea do mesmo registro:** vale a última alteração salva.
-
----
-
-## 🛠️ Guia de Customização
-
-- **Adicionar novas marcas:** Abra o arquivo `index.html` e adicione novas opções na tag `<select id="brand">`.
-- **Adicionar componentes:** Abra o arquivo `index.html` e insira um novo `<label><input type="checkbox" name="components" value="NomeDoComponente"> NomeDoComponente</label>`. O script `app.js` detecta e exporta dinamicamente todos os componentes marcados.
-- **Limpar dados do aparelho:** limpe os dados do site no navegador. Com a planilha configurada, os registros já sincronizados voltam na próxima abertura; os que estavam **Aguardando envio** seriam perdidos, então sincronize antes.
-- **Atualização de versão de cache:** Sempre que fizer alterações em arquivos estáticos, altere o identificador `const CACHE = 'inventario-ti-vX';` no arquivo `sw.js` para forçar os navegadores a baixarem a nova versão.

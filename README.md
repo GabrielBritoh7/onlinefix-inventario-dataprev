@@ -2,54 +2,7 @@
 
 Aplicação web progressiva (**PWA**) para triagem e inventário físico de computadores. Várias pessoas podem cadastrar ao mesmo tempo, cada uma no seu celular, e **tudo vai para uma única planilha compartilhada da equipe** (Google Sheets). Sem internet, o app continua funcionando e envia os registros quando a conexão volta.
 
-> **Custo zero:** a "nuvem" é uma planilha do Google + um pequeno script (Google Apps Script) publicado de graça. O site continua hospedado no Netlify ou GitHub Pages.
-
----
-
-## ☁️ Planilha compartilhada (configuração única — 10 minutos)
-
-Quem coordena o inventário faz isto **uma vez**. Depois, o resto da equipe só abre um link.
-
-### 1. Criar a planilha e o script
-1. Acesse [sheets.google.com](https://sheets.google.com) e crie uma planilha em branco, ex.: **Inventário TI - Equipe**.
-2. Menu **Extensões → Apps Script**.
-3. Apague o conteúdo do editor e cole o arquivo **`apps-script/Codigo.gs`** inteiro.
-4. Na linha `const CHAVE_EQUIPE = '...'`, troque o texto por uma frase só da equipe (ex.: `datenbomba-estoque-2026`).
-5. Salve (ícone de disquete). No seletor de funções, escolha **`configurar`** e clique em **Executar**. O Google pede autorização: aceite com a conta dona da planilha. As abas **Inventário** e **Excluídos** são criadas.
-
-### 2. Publicar como "App da Web"
-1. **Implantar → Nova implantação** → engrenagem → **App da Web**.
-2. **Executar como:** *Eu*. **Quem pode acessar:** *Qualquer pessoa*.
-3. Clique em **Implantar** e copie a **URL do app da Web** (termina em `/exec`).
-
-> "Qualquer pessoa" significa que o app consegue chamar o script sem login. A planilha em si continua privada: só quem você compartilhar consegue abri-la. O script só aceita gravações com a chave da equipe.
-
-### 3. Ligar o app à planilha (escolha uma opção)
-- **Para todos de uma vez (recomendado):** abra `config.js`, preencha `apiUrl` (a URL `/exec`) e `teamKey` (a chave), e publique o site de novo no Netlify. Quem abrir o site já grava na planilha da equipe.
-- **Sem republicar o site:** no app, toque em **Configurar**, cole a URL e a chave, **Salvar e sincronizar**. Depois toque em **Copiar link de acesso para a equipe** e mande pelo Teams. Quem abrir esse link já fica configurado.
-
-Na primeira abertura, o app pede o **nome** da pessoa (vai na coluna "Registrado por").
-
-### 4. Trazer os dados da planilha antiga
-Copie as linhas da planilha antiga (Excel/SharePoint) e cole na aba **Inventário** a partir da linha 2, respeitando a ordem das colunas abaixo. Deixe a coluna **ID** vazia: o script gera os IDs sozinho na próxima sincronização.
-
-| ID | Patrimônio | Número de série | Marca | Modelo | Estado | Situação | SSD | HD | Memória RAM | Observações / laudo | Registrado por | Criado em | Última atualização |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-
-- **Estado:** `OK`/`Funcionando` ou `Defeito`/`Com defeito`.
-- **SSD / HD / Memória RAM:** `Sim` ou `Não`.
-
-### Como a sincronização funciona
-- Ao salvar, o registro fica no celular marcado como **Aguardando envio** e é enviado na hora (se houver internet).
-- O app também sincroniza ao abrir, quando a internet volta, ao voltar para a tela e a cada 1 minuto. Há o botão **Sincronizar agora**.
-- Cada registro tem um **ID único**: sincronizar de novo **atualiza** a linha, nunca cria outra.
-- **Duplicidade entre a equipe:** se outra pessoa já cadastrou o mesmo patrimônio ou número de série, a planilha recusa e o card mostra o motivo e quem registrou.
-- **Exclusão:** a linha sai da aba Inventário e vai para a aba **Excluídos**, com data e quem excluiu.
-- **Registros da versão antiga** (que estavam só no navegador) sobem automaticamente para a planilha na primeira sincronização.
-- Para baixar em Excel: na planilha, **Arquivo → Fazer download → Microsoft Excel (.xlsx)**. O botão **Exportar CSV** do app continua funcionando offline.
-
-### Se mudar o Codigo.gs depois
-**Implantar → Gerenciar implantações → editar (lápis) → Versão: Nova versão → Implantar.** Assim a URL continua a mesma.
+> **Custo zero:** a "nuvem" é uma planilha do Google + um pequeno script (Google Apps Script) publicado de graça. O site continua hospedado no Netlify ou GitHub Pages
 
 ---
 
